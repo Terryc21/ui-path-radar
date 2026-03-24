@@ -683,10 +683,12 @@ After presenting findings, apply fixes in **waves**. After each wave (including 
 
 | Wave | Section | Est. Time | Description |
 |------|---------|-----------|-------------|
-| 1 | Safe fixes | ~5-10 min | Isolated, low blast radius. Auto-apply. |
-| 2 | Cross-cutting fixes | ~10-20 min | Touch shared code. Present for review first. |
+| 1 | Safe fixes + tests | ~10-15 min | Isolated, low blast radius. Auto-apply. Write tests for each fix. |
+| 2 | Cross-cutting fixes + tests | ~15-25 min | Touch shared code. Present for review first. Write tests. |
 | 3 | Design decisions | ~5-15 min | Multiple options. Requires user input per item. |
-| 4 | Commit | ~2 min | Stage, commit, verify. |
+| 4 | Build + Test + Commit | ~5 min | Build both platforms, run tests, stage, commit. |
+
+**Every fix must have a test.** Do not move to the next wave until tests for the current wave's fixes are written and compiling. The test verifies the fix works; without it, the fix is unverified code.
 
 Skip empty waves.
 
@@ -779,7 +781,7 @@ Optional field suggesting how planning skills might batch issues:
 
 ## Cross-Skill Handoff
 
-UI Path Radar complements **roundtrip-radar** (data safety), **ui-enhancer** (visual quality), and **release-ready-radar** (ship readiness). Findings from one skill inform the others.
+UI Path Radar complements **data-model-radar** (model layer), **roundtrip-radar** (data safety), **ui-enhancer** (visual quality), and **capstone-radar** (ship readiness). Findings from one skill inform the others.
 
 ### On Completion — Write Handoff
 
@@ -805,7 +807,7 @@ for_ui_enhancer:
       finding: "<what was found>"
       action: "remove or wire up before visual audit"
 
-for_release_ready_radar:
+for_capstone_radar:
   # Critical/high findings that affect ship readiness
   blockers:
     - finding: "<description>"
