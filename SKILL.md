@@ -158,9 +158,9 @@ It will NOT use:
 
 When the audit completes (or hits a layer that needs restricted tools), it prints:
 ```
-⏱ Hands-free audit complete through Layer [N].
-  Layers requiring action: [list]
-  Reply to continue with supervised layers.
+⏱ Hands-free audit complete through Step [N] of 5: [plain description of what was completed].
+  Steps requiring your input: [list with plain descriptions]
+  Reply to continue with supervised steps.
 ```
 
 #### Pre-Approved Mode
@@ -297,18 +297,56 @@ tput cols
 
 Store the result as `TERMINAL_WIDE` (true/false) and apply to ALL tables in the session — discovery tables, issue tables, and summaries. If the user later says "show full table", "wide table", or "full ratings", re-render the most recent findings table in full 8-column format regardless of terminal width.
 
+---
+
+## Plain Language Communication (MANDATORY)
+
+All user-facing prompts must be understandable by someone who has never used this skill before. Apply these rules to every `AskUserQuestion`, progress banner, and completion message:
+
+1. **Describe what was found** in plain terms ("3 dead-end screens, 2 navigation bugs") — not internal categories ("3 Layer 3 findings")
+2. **Describe next steps by what they DO**, not by skill name ("check your data models for backup gaps" not "proceed to data-model-radar")
+3. **Describe options by outcome and time cost** ("Fix navigation dead ends now (~10 min)" not "Wave 1: Safe fixes")
+4. **Add an "Explain more" option** to every transition `AskUserQuestion` so users can get context without slowing down experienced users
+5. **Define jargon on first use:**
+   - "Layer" → "step" or "analysis phase" (a stage in the audit process)
+   - "Wave" → "fix batch" (a group of related fixes applied together)
+   - "Handoff" → a file this skill writes so other audit skills can pick up where it left off
+   - "Dead end" → a screen the user can reach but can't navigate away from
+   - "Broken promise" → a button or link that appears but doesn't work or leads nowhere
+   - "Entry point" → a way to reach a feature (tab, button, deep link, etc.)
+6. **Exception:** If user selected Senior/Expert experience level, terse references are acceptable
+
+### Completion Prompt Template
+
+When the audit is complete, use this pattern:
+
+```
+I found [X] issues in your app's navigation and user flows:
+- [N] dead ends (screens users can't leave)
+- [N] broken paths (buttons/links that don't work)
+- [N] missing features (advertised but not reachable)
+
+You can:
+1. **Fix the critical issues now** (~[time]) — [one-line description]
+2. **Fix just the quick wins** (~[time]) — [one-line description]
+3. **Keep auditing other areas first** — I'll check [plain description of next analysis] next
+4. **Explain more** — I'll walk through what each issue means before you decide
+```
+
+---
+
 When invoked, perform the audit:
 
 ### If no arguments or "full":
 
 **Before starting, print:**
 ```
-⏱ Full Audit: 5 layers — estimated total: ~10-30 min depending on codebase size
-  Layer 1: Discovery → Layer 2: Tracing → Layer 3: Issues → Layer 4: Evaluation → Layer 5: Data Wiring
+⏱ Full Audit: 5 steps — estimated total: ~10-30 min depending on codebase size
+  Step 1: Find all entry points → Step 2: Trace how users navigate → Step 3: Detect issues → Step 4: Evaluate user impact → Step 5: Verify data wiring
 ```
 
 Run all 5 layers sequentially, outputting findings to `.ui-path-radar/` in the project root.
-**Between layers, print:** `⏱ ✓ Layer [N] complete — starting Layer [N+1]`
+**Between layers, print:** `⏱ ✓ Step [N] of 5 complete: [plain description of what was done] — starting Step [N+1]: [plain description of what's next]`
 
 ### If "layer1" or "discovery":
 
@@ -595,10 +633,10 @@ Compare current codebase against the previous audit to show what changed:
 
 When completing a layer and moving to the next, print:
 ```
-⏱ ✓ Layer [N] complete — [M] findings ([X] verified, [Y] probable, [Z] needs-runtime)
-  Retracted from prior layers: [count or "none"]
+⏱ ✓ Step [N] of 5 complete: [plain description] — [M] findings ([X] verified, [Y] probable, [Z] needs-runtime)
+  Retracted from prior steps: [count or "none"]
   Cumulative: [total] findings ([C] critical, [H] high, [M] medium, [L] low)
-  Next: Layer [N+1] will check [brief description of what it does and why it matters given current findings].
+  Next: Step [N+1] — [plain description of what it does and why it matters given current findings].
   → "proceed" | "explain #[N]" | "stop here"
 ```
 
@@ -619,9 +657,9 @@ After completing the audit, provide these **6 items in order**:
 ```
 4. **Cross-skill handoff notes** (if applicable) — If any findings fall into another skill's domain, note them:
 ```
-🔗 Handoff candidates:
-  #[N] → /roundtrip-radar — data round-trip verification needed
-  #[N] → /ui-enhancer — visual layout concern
+🔗 Related areas to check next:
+  #[N] → Check whether saved data survives editing round-trips (data safety audit)
+  #[N] → Check visual layout and spacing for this screen (visual quality audit)
 ```
 5. **Limitations disclaimer** — What this audit can't see:
 ```
@@ -630,7 +668,7 @@ After completing the audit, provide these **6 items in order**:
    UX feel, accessibility with VoiceOver. Consider runtime testing for
    findings marked "needs-runtime."
 ```
-6. **One-line next step** — suggest next action ("proceed to fixes", "run /roundtrip-radar for data findings", etc.)
+6. **One-line next step** — suggest next action ("proceed to fixes", "check data safety for affected workflows", etc.)
 
 No other sections. Items 3-5 may be omitted if not applicable (no risky findings, no handoffs, experienced/senior user who doesn't need the disclaimer).
 
@@ -781,7 +819,7 @@ Optional field suggesting how planning skills might batch issues:
 
 ## Cross-Skill Handoff
 
-UI Path Radar complements **data-model-radar** (model layer), **roundtrip-radar** (data safety), **ui-enhancer** (visual quality), and **capstone-radar** (ship readiness). Findings from one skill inform the others.
+UI Path Radar complements **data-model-radar** (model layer), **roundtrip-radar** (data safety), **ui-enhancer-radar** (visual quality), and **capstone-radar** (ship readiness). Findings from one skill inform the others.
 
 ### On Completion — Write Handoff
 
@@ -800,7 +838,7 @@ for_roundtrip_radar:
       file: "<file:line>"
       question: "<specific question for roundtrip-radar to verify>"
 
-for_ui_enhancer:
+for_ui_enhancer_radar:
   # Dead buttons and orphaned views should be removed or fixed before visual audit
   suspects:
     - view: "<view file>"
@@ -814,13 +852,13 @@ for_capstone_radar:
       urgency: "<CRITICAL|HIGH>"
 ```
 
-**Fire-and-forget:** Always write this file regardless of whether other skills are installed. If the receiving skill isn't installed, the file sits harmlessly. If installed later, it picks up the handoff on next run.
+**Automatic:** This file is always written so other audit skills can pick up where this one left off. No user action needed.
 
 ### On Startup — Read Handoffs
 
 Before starting the audit, check for handoff files from other skills:
 - `.agents/ui-audit/roundtrip-radar-handoff.yaml` — data safety issues that may have UI implications
-- `.agents/ui-audit/ui-enhancer-handoff.yaml` — visual issues that may indicate structural problems
+- `.agents/ui-audit/ui-enhancer-radar-handoff.yaml` — visual issues that may indicate structural problems
 
 If found, incorporate relevant items as **suspects** in the appropriate layer. If not found, proceed normally — the other skills may not be installed or haven't been run yet.
 
