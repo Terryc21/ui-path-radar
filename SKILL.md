@@ -955,13 +955,30 @@ for_capstone_radar:
 
 **Automatic:** This file is always written so other audit skills can pick up where this one left off. No user action needed.
 
-### On Startup — Read Handoffs
+### On Startup — Read Handoffs (MANDATORY)
 
-Before starting the audit, check for handoff files from other skills:
-- `.agents/ui-audit/roundtrip-radar-handoff.yaml` — data safety issues that may have UI implications
-- `.agents/ui-audit/ui-enhancer-radar-handoff.yaml` — visual issues that may indicate structural problems
+Before starting the audit, read ALL companion handoff YAMLs that exist:
 
-If found, incorporate relevant items as **suspects** in the appropriate layer. If not found, proceed normally — the other skills may not be installed or haven't been run yet.
+```
+Read .agents/ui-audit/data-model-radar-handoff.yaml (if exists)
+Read .agents/ui-audit/roundtrip-radar-handoff.yaml (if exists)
+Read .agents/ui-audit/ui-enhancer-radar-handoff.yaml (if exists)
+Read .agents/ui-audit/capstone-radar-handoff.yaml (if exists)
+```
+
+**Parse `for_ui_path_radar` sections.** Each companion can direct findings to this skill. Look for:
+- `for_ui_path_radar.suspects[]` — views or navigation paths another skill flagged as broken
+- `for_ui_path_radar.priority_areas[]` — areas another skill wants traced first
+
+If found, incorporate as **priority targets** in the appropriate audit layer. These are not pre-confirmed findings — verify each one independently.
+
+**What each companion provides:**
+- data-model-radar — dead model fields that may indicate orphaned UI
+- roundtrip-radar — data safety issues that may have UI implications
+- ui-enhancer-radar — visual issues that may indicate structural navigation problems
+- capstone-radar — priority navigation areas from ship readiness grading
+
+If not found, proceed normally — the other skills may not be installed or haven't been run yet.
 
 ---
 
