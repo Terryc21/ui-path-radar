@@ -442,7 +442,7 @@ RIGHT (enumerate-then-verify):
 
 **Why:** Grep finds what you search for but cannot find what you don't search for. A violation may have no searchable code signature (e.g., an element that inherits default styling with no explicit code). Grep-only scanning missed 57% of violations in real-world testing.
 
-**When to use:** Apply to domains where violations can be the absence of a correct pattern, not just the presence of a wrong one. Domains where every violation has a unique searchable signature (force unwraps, hardcoded strings) remain `grep-sufficient`.
+**When to use:** Apply to domains where violations can be the absence of a correct pattern, not just the presence of a wrong one. Domains where every violation has a unique searchable signature (force unwraps, hardcoded strings) remain `grep-sufficient`. Scan-method tags (`grep-sufficient`, `enumerate-required`, `mixed`) are on each layer heading below.
 
 ### Principle 2: File-Scoped Skip Lists
 
@@ -486,7 +486,7 @@ When invoked, perform the audit:
 Run all 5 layers sequentially, outputting findings to `.ui-path-radar/` in the project root.
 **Between layers, print:** `⏱ ✓ Step [N] of 5 complete: [plain description of what was done] — starting Step [N+1]: [plain description of what's next]`
 
-### If "layer1" or "discovery":
+### If "layer1" or "discovery": `enumerate-required`
 
 **Before starting**, count Swift files and print an estimate:
 ```
@@ -597,7 +597,7 @@ After the tables, list:
 - Count by depth level
 - Recommended flows to audit in Layer 2 (flagged entries first, deepest paths second)
 
-### If "layer2" or "trace" (no path argument):
+### If "layer2" or "trace" (no path argument): `enumerate-required`
 
 **Before starting, print:**
 ```
@@ -628,7 +628,7 @@ Targeted flow trace — trace a specific user journey described in natural langu
 5. Document the trace and any issues found
 6. Output: Issue Rating Table for any findings, plus the step-by-step trace
 
-### If "layer3" or "issues":
+### If "layer3" or "issues": `mixed`
 
 **Before starting, print:**
 ```
@@ -668,7 +668,7 @@ Rules:
 - Layer 3 cannot produce a grade while any flagged entry has `?` in Verified
 - Retracted findings stay in the table with strikethrough — they prove you checked, not just confirmed
 
-### If "layer4" or "evaluate":
+### If "layer4" or "evaluate": `enumerate-required`
 
 **Before starting, print:**
 ```
@@ -694,7 +694,7 @@ Rules:
 4. **After each evaluation, print:** `⏱ Layer 4: ✓ Issue [N]/[total] — [confidence] — [D/E/F/R scores]`
 5. Output to `layer4-semantic-evaluation.md`
 
-### If "layer5" or "data-wiring" or "wiring":
+### If "layer5" or "data-wiring" or "wiring": `enumerate-required`
 
 **Before starting, print:**
 ```
