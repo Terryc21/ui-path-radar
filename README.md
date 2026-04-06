@@ -1,5 +1,7 @@
 # UI Path Radar
 
+![Visitors](https://komarev.com/ghpvc/?username=Terryc21&repo=ui-path-radar&label=visitors&color=blue) ![GitHub stars](https://img.shields.io/github/stars/Terryc21/ui-path-radar?style=flat) ![GitHub forks](https://img.shields.io/github/forks/Terryc21/ui-path-radar?style=flat)
+
 > 5-layer UI path audit for SwiftUI/UIKit apps. Discovers entry points, traces flows, detects dead ends and broken promises, evaluates UX impact, and verifies data wiring.
 
 ## Moved to Radar Suite
